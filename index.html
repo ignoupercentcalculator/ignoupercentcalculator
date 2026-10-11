@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGNOU Percentage Calculator - Calculate TEE & Assignment Weights | Study Aid</title>
+    <meta name="description" content="Use the IGNOU Percentage Calculator for precise results based on the official 70% TEE and 30% Assignment weightage. Master your IGNOU grade calculation, understand passing marks, and find the overall credit-weighted average for your program.">
+    <meta name="keywords" content="IGNOU percentage calculator, IGNOU grading system, IGNOU passing marks, TEE marks, Assignment weightage, IGNOU result calculation, IGNOU grade calculation, credit-weighted average, overall IGNOU percentage">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a clean academic look */
+        body { font-family: 'Inter', sans-serif; background-color: #f8f8f8; }
+        .academic-header { background-color: #1e3a8a; } /* Dark Blue */
+        .calculator-card { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
+        .content-section { border-left: 4px solid #3b82f6; padding-left: 1rem; }
+        .faq-question { cursor: pointer; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="academic-header text-white shadow-lg">
+        <div class="container mx-auto p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">IGNOU Percentage Calculator</h1>
+            <nav>
+                <a href="#calculator" class="text-sm font-medium hover:text-blue-300 mx-2 sm:mx-4">Calculator</a>
+                <a href="#guide" class="text-sm font-medium hover:text-blue-300 mx-2 sm:mx-4">Grading Guide</a>
+                <a href="#faq" class="text-sm font-medium hover:text-blue-300 mx-2 sm:mx-4">FAQ</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-8">
+
+        <!-- Main H1 - SEO Title -->
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 mb-6 text-center">
+            Accurate IGNOU Percentage Calculator for TEE and Assignment Marks
+        </h1>
+        <p class="text-xl text-gray-600 text-center mb-10 max-w-3xl mx-auto">
+            Use this tool for reliable **IGNOU grade calculation**. Calculate your **overall program percentage** instantly based on the official 70% Term-End Examination (TEE) and 30% Assignment weightage, ensuring you know your exact performance.
+        </p>
+
+        <!-- Calculator Section -->
+        <section id="calculator" class="bg-white p-6 sm:p-10 rounded-xl calculator-card mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-3">Calculate Your IGNOU Course Performance</h2>
+            <form id="percentageForm">
+                <div id="courseInputs" class="space-y-4">
+                    <!-- Initial 3 Course Rows -->
+                    <script>
+                        // Function to add a course row
+                        function addCourseRow(courseNumber = 1) {
+                            return `
+                            <div id="course-${courseNumber}" class="course-row grid grid-cols-6 sm:grid-cols-12 gap-2 sm:gap-4 items-center bg-gray-50 p-3 rounded-lg border">
+                                <label for="courseName-${courseNumber}" class="text-sm font-medium text-gray-600 col-span-6 sm:col-span-3">Course ${courseNumber}</label>
+                                <input type="text" id="courseName-${courseNumber}" placeholder="BCA-001 / MCS-011" class="p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 col-span-6 sm:col-span-3 text-sm">
+                                
+                                <div class="col-span-3 sm:col-span-2">
+                                    <label class="text-xs text-gray-500 block">Assignment (Max 30)</label>
+                                    <input type="number" id="assignment-${courseNumber}" max="30" min="0" value="0" required class="w-full p-2 border rounded-lg text-center text-sm assignment-input" data-course-id="${courseNumber}">
+                                </div>
+                                <div class="col-span-3 sm:col-span-2">
+                                    <label class="text-xs text-gray-500 block">TEE Marks (Max 70)</label>
+                                    <input type="number" id="tee-${courseNumber}" max="70" min="0" value="0" required class="w-full p-2 border rounded-lg text-center text-sm tee-input" data-course-id="${courseNumber}">
+                                </div>
+                                
+                                <div class="col-span-6 sm:col-span-2 flex justify-between items-center text-lg font-semibold text-blue-700">
+                                    <span id="total-${courseNumber}" class="total-marks">0 / 100</span>
+                                    <button type="button" onclick="removeCourseRow('course-${courseNumber}')" class="text-red-500 hover:text-red-700 ml-2 text-xl" title="Remove Course">
+                                        &times;
+                                    </button>
+                                </div>
+                            </div>
+                            `;
+                        }
+
+                        // Populate initial rows
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const courseInputs = document.getElementById('courseInputs');
+                            for (let i = 1; i <= 3; i++) {
+                                courseInputs.insertAdjacentHTML('beforeend', addCourseRow(i));
+                            }
+                        });
+                    </script>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                    <button type="button" onclick="addNewCourse()" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-md flex-1">
+                        + Add Another Course
+                    </button>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-md flex-1">
+                        Calculate Overall Percentage
+                    </button>
+                </div>
+            </form>
+
+            <!-- Results Display -->
+            <div id="results" class="mt-8 p-6 bg-blue-50 border-2 border-blue-200 rounded-xl text-center hidden">
+                <p class="text-lg font-medium text-gray-700">Total Marks Obtained:</p>
+                <p class="text-5xl font-extrabold text-blue-800" id="totalMarksDisplay">0</p>
+                <p class="text-lg font-medium text-gray-700 mt-4">Overall Program Percentage:</p>
+                <p class="text-6xl font-extrabold text-green-700 mt-2">
+                    <span id="percentageDisplay">0.00</span>%
+                </p>
+                <p class="text-sm text-gray-500 mt-3">Calculated over <span id="totalCourses">0</span> courses.</p>
+            </div>
+            
+            <div id="error" class="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg hidden"></div>
+        </section>
+
+        <!-- SEO Content Sections (7 Articles) -->
+        <section id="guide" class="space-y-12 py-10">
+            <h2 class="text-4xl font-bold text-gray-800 mb-8 border-b-4 border-blue-500 pb-2">The Complete IGNOU Grade Calculation and Grading Guide</h2>
+
+            <!-- Article 1 -->
+            <div class="content-section">
+                <h3 class="text-2xl font-semibold text-blue-800 mb-3">1. Understanding the IGNOU 70/30 Weightage Rule</h3>
+                <p class="text-gray-700">
+                    The Indira Gandhi National Open University (IGNOU) uses a fixed **IGNOU 70/30 weightage system** to calculate your final course score. This system divides the evaluation for each course into two primary components: the Term-End Examination (TEE) and the Assignment component. Specifically, the TEE accounts for <strong class="text-green-600">70% of your final marks</strong>, while the Assignment component contributes the remaining <strong class="text-green-600">30%</strong>. This distribution is critical to know before attempting to use the **IGNOU Percentage Calculator** to find your overall result.
+                </p>
+            </div>
+
+            <!-- Article 2 -->
+            <div class="content-section">
+                <h3 class="text-2xl font-semibold text-blue-800 mb-3">2. How to Convert Your Raw Assignment Marks to the 30% Weightage</h3>
+                <p class="text-gray-700">
+                    Your assignments are typically marked out of 100. To find the marks that will be counted towards your final percentage, you must convert this raw score to the **30% Assignment weightage**. The formula is: `Weighted Assignment Marks = (Raw Assignment Marks / 100) * 30`. For example, if you scored 80 out of 100 in your assignment, your weighted mark is `(80/100) * 30 = 24` marks. This calculator already handles this conversion by setting the maximum input to 30.
+                </p>
+            </div>
+
+            <!-- Article 3 -->
+            <div class="content-section">
+                <h3 class="text-2xl font-semibold text-blue-800 mb-3">3. Calculating the Weighted TEE Marks (The 70% Share)</h3>
+                <p class="text-gray-700">
+                    Similarly, your TEE is often marked out of 100 or 50, depending on the credit value of the course. To find the 70% weighted score, the formula is: `Weighted TEE Marks = (Raw TEE Marks / Max TEE Marks) * 70`. If your raw TEE score is 70 out of 100, your weighted mark is exactly 70. However, if your TEE is marked out of 50, and you scored 40, your weighted score is `(40/50) * 70 = 56`. Our **IGNOU Percentage Calculator** simplifies this step by assuming your input **TEE marks** are already converted to the 70-point scale.
+                </p>
+            </div>
+
+            <!-- Article 4 -->
+            <div class="content-section">
+                <h3 class="text-2xl font-semibold text-blue-800 mb-3">4. The Overall Course Score Formula for IGNOU</h3>
+                <p class="text-gray-700">
+                    The final score for a single course (which is out of 100, and thus, your course percentage) is the sum of the two weighted components: `Final Course Score = Weighted Assignment Marks (Max 30) + Weighted TEE Marks (Max 70)`. This score is then used to determine your grade and is essential for calculating the **overall IGNOU percentage** for your program.
+                </p>
+            </div>
+
+            <!-- Article 5 -->
+            <div class="content-section">
+                <h3 class="text-2xl font-semibold text-blue-800 mb-3">5. The Role of Credit Hours in Accurate Percentage Calculation</h3>
+                <p class="text-gray-700">
+                    For programs where courses have different credit values (e.g., 2-credit vs. 8-credit courses), the overall program percentage should technically be calculated using a **credit-weighted average**. The formula is: `Overall Percentage = [ (Course 1 Score * Course 1 Credits) + ... ] / [ Total Credits ]`. For simplicity, if all your courses are 4 or 8 credits, the simple average is often sufficient, but for true **IGNOU grade calculation** accuracy, always refer to the credit system.
+                </p>
+            </div>
+
+            <!-- Article 6 -->
+            <div class="content-section">
+                <h3 class="text-2xl font-semibold text-blue-800 mb-3">6. Understanding the Passing Marks in IGNOU Programs</h3>
+                <p class="text-gray-700">
+                    The passing criteria in IGNOU requires a minimum score in *both* the assignment and the TEE components. Generally, you need around 40% (Grade D) or more overall in a course. For graduate courses, this typically means:
+                    <ul class="list-disc ml-6 mt-2 space-y-1">
+                        <li>**Assignment:** Minimum 40% in the raw score (40/100).</li>
+                        <li>**TEE:** Minimum 40% in the raw score (40/100).</li>
+                    </ul>
+                    The exact requirement for **passing marks in IGNOU** can vary by program (e.g., some professional programs require 50% or Grade C), so always check your program guide.
+                </p>
+            </div>
+
+            <!-- Article 7 -->
+            <div class="content-section">
+                <h3 class="text-2xl font-semibold text-blue-800 mb-3">7. Decoding the IGNOU Grade Card and Division System</h3>
+                <p class="text-gray-700">
+                    IGNOU does not award a 'First Class' or 'Second Class' like conventional universities. Instead, the final result is based on a division system derived from your cumulative percentage:
+                    <ul class="list-disc ml-6 mt-2 space-y-1">
+                        <li>**First Division:** 60% and above.</li>
+                        <li>**Second Division:** 50% to 59.9%.</li>
+                        <li>**Third Division (Pass):** 40% to 49.9%.</li>
+                        <li>**Reappear/Fail:** Below 40%.</li>
+                    </ul>
+                    Achieving a percentage of 60% or more is considered an excellent academic performance in IGNOU.
+                </p>
+            </div>
+        </section>
+
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-8 border-b-4 border-purple-500 pb-2">Frequently Asked Questions (FAQ) about IGNOU Grade Calculation</h2>
+
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <div class="bg-white p-5 rounded-lg shadow-md border-t-4 border-purple-300">
+                    <h4 class="faq-question text-xl font-semibold text-gray-800 flex justify-between items-center" onclick="toggleAnswer(this)">
+                        Is the TEE score out of 100 or 70 in IGNOU?
+                        <span class="text-purple-500 text-2xl">+</span>
+                    </h4>
+                    <div class="faq-answer mt-3 text-gray-600 hidden">
+                        The TEE (Term-End Examination) is typically marked out of 100 (or 50 for some courses), but its *weightage* towards your final course score is 70%. When calculating your final marks, the raw TEE score is converted to the 70-point scale.
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="bg-white p-5 rounded-lg shadow-md border-t-4 border-purple-300">
+                    <h4 class="faq-question text-xl font-semibold text-gray-800 flex justify-between items-center" onclick="toggleAnswer(this)">
+                        Can I pass a course if I score high in the assignment but fail the TEE?
+                        <span class="text-purple-500 text-2xl">+</span>
+                    </h4>
+                    <div class="faq-answer mt-3 text-gray-600 hidden">
+                        No. IGNOU requires you to pass *both* components (TEE and Assignment) individually. You must secure the minimum required **passing marks in IGNOU** for both the TEE (usually 40% of the raw marks) and the Assignment component. Excelling in one does not compensate for failing the other.
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="bg-white p-5 rounded-lg shadow-md border-t-4 border-purple-300">
+                    <h4 class="faq-question text-xl font-semibold text-gray-800 flex justify-between items-center" onclick="toggleAnswer(this)">
+                        How is the overall percentage of the entire degree/program calculated?
+                        <span class="text-purple-500 text-2xl">+</span>
+                    </h4>
+                    <div class="faq-answer mt-3 text-gray-600 hidden">
+                        The **overall IGNOU percentage** is calculated by dividing the sum of your final scores (out of 100) for *all* courses by the total maximum marks possible (which is 100 times the number of courses) and multiplying by 100. If your courses have different credit weights, a **credit-weighted average** is used, as detailed in our guide.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto p-6 sm:p-8 text-center">
+            <div class="mb-4 text-lg font-bold">IGNOU Percentage Tools</div>
+            <p class="text-sm text-gray-400">&copy; 2024 IGNOU Study Aid. Disclaimer: This calculator is based on standard IGNOU evaluation patterns. Always cross-verify with your official grade card.</p>
+            <div class="mt-4 flex justify-center space-x-6">
+                <a href="#guide" class="text-gray-400 hover:text-white text-sm">Grading Policy</a>
+                <a href="#" class="text-gray-400 hover:text-white text-sm">Privacy</a>
+                <a href="#" class="text-gray-400 hover:text-white text-sm">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Calculator Logic -->
+    <script>
+        // Track the next course ID to ensure unique IDs
+        let nextCourseId = 4;
+
+        /**
+         * Adds a new course input row to the form.
+         */
+        function addCourseRow(courseNumber = 1) {
+             return `
+            <div id="course-${courseNumber}" class="course-row grid grid-cols-6 sm:grid-cols-12 gap-2 sm:gap-4 items-center bg-gray-50 p-3 rounded-lg border">
+                <label for="courseName-${courseNumber}" class="text-sm font-medium text-gray-600 col-span-6 sm:col-span-3">Course ${courseNumber}</label>
+                <input type="text" id="courseName-${courseNumber}" placeholder="BCA-001 / MCS-011" class="p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 col-span-6 sm:col-span-3 text-sm">
+                
+                <div class="col-span-3 sm:col-span-2">
+                    <label class="text-xs text-gray-500 block">Assignment (Max 30)</label>
+                    <input type="number" id="assignment-${courseNumber}" max="30" min="0" value="0" required class="w-full p-2 border rounded-lg text-center text-sm assignment-input" data-course-id="${courseNumber}">
+                </div>
+                <div class="col-span-3 sm:col-span-2">
+                    <label class="text-xs text-gray-500 block">TEE Marks (Max 70)</label>
+                    <input type="number" id="tee-${courseNumber}" max="70" min="0" value="0" required class="w-full p-2 border rounded-lg text-center text-sm tee-input" data-course-id="${courseNumber}">
+                </div>
+                
+                <div class="col-span-6 sm:col-span-2 flex justify-between items-center text-lg font-semibold text-blue-700">
+                    <span id="total-${courseNumber}" class="total-marks">0 / 100</span>
+                    <button type="button" onclick="removeCourseRow('course-${courseNumber}')" class="text-red-500 hover:text-red-700 ml-2 text-xl" title="Remove Course">
+                        &times;
+                    </button>
+                </div>
+            </div>
+            `;
+        }
+
+        function addNewCourse() {
+            const courseInputs = document.getElementById('courseInputs');
+            courseInputs.insertAdjacentHTML('beforeend', addCourseRow(nextCourseId));
+            nextCourseId++;
+            addEventListeners();
+        }
+
+        /**
+         * Removes a specific course row.
+         * @param {string} elementId - The ID of the course row to remove.
+         */
+        function removeCourseRow(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.remove();
+                calculateOverallPercentage(); // Recalculate immediately
+            }
+        }
+        
+        /**
+         * Calculates the total marks for a single course and updates the display.
+         * @param {number} courseId - The ID of the course row.
+         */
+        function calculateCourseTotal(courseId) {
+            const assignmentInput = document.getElementById(`assignment-${courseId}`);
+            const teeInput = document.getElementById(`tee-${courseId}`);
+            const totalDisplay = document.getElementById(`total-${courseId}`);
+            
+            let assignmentMarks = parseFloat(assignmentInput.value) || 0;
+            let teeMarks = parseFloat(teeInput.value) || 0;
+            
+            // Input validation and clamping (max 30 for assignment, max 70 for TEE)
+            assignmentMarks = Math.min(Math.max(0, assignmentMarks), 30);
+            teeMarks = Math.min(Math.max(0, teeMarks), 70);
+
+            // Update input values to clamped numbers
+            assignmentInput.value = assignmentMarks;
+            teeInput.value = teeMarks;
+
+            const totalMarks = assignmentMarks + teeMarks;
+            
+            if (totalDisplay) {
+                 totalDisplay.textContent = `${totalMarks.toFixed(0)} / 100`;
+            }
+
+            return totalMarks;
+        }
+
+        /**
+         * Calculates the overall program percentage across all courses.
+         */
+        function calculateOverallPercentage() {
+            const courseRows = document.querySelectorAll('.course-row');
+            let totalMarksObtained = 0;
+            let totalCoursesCount = 0;
+            
+            if (courseRows.length === 0) {
+                 document.getElementById('results').classList.add('hidden');
+                 return;
+            }
+
+            courseRows.forEach(row => {
+                const courseId = row.querySelector('.assignment-input').dataset.courseId;
+                const courseTotal = calculateCourseTotal(courseId);
+                totalMarksObtained += courseTotal;
+                totalCoursesCount++;
+            });
+
+            const totalMaximumMarks = totalCoursesCount * 100;
+            let overallPercentage = 0;
+
+            if (totalMaximumMarks > 0) {
+                overallPercentage = (totalMarksObtained / totalMaximumMarks) * 100;
+            }
+            
+            // Display results
+            document.getElementById('totalMarksDisplay').textContent = totalMarksObtained.toFixed(0);
+            document.getElementById('percentageDisplay').textContent = overallPercentage.toFixed(2);
+            document.getElementById('totalCourses').textContent = totalCoursesCount;
+            
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('error').classList.add('hidden');
+        }
+
+        /**
+         * Attaches event listeners to all new input fields.
+         */
+        function addEventListeners() {
+            document.querySelectorAll('.assignment-input, .tee-input').forEach(input => {
+                // Remove existing listener to prevent duplicates
+                input.removeEventListener('input', handleInputChange);
+                // Add new listener
+                input.addEventListener('input', handleInputChange);
+            });
+        }
+        
+        /**
+         * Generic handler for input changes.
+         */
+        function handleInputChange(event) {
+             const courseId = event.target.dataset.courseId;
+             calculateCourseTotal(courseId);
+             // Optionally recalculate overall percentage on every change for real-time feedback
+             calculateOverallPercentage();
+        }
+
+        /**
+         * Handles the form submission for final calculation.
+         */
+        document.getElementById('percentageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateOverallPercentage();
+        });
+
+        /**
+         * Toggles the visibility of the FAQ answer.
+         * @param {HTMLElement} questionElement - The H4 element clicked.
+         */
+        function toggleAnswer(questionElement) {
+            const answerElement = questionElement.nextElementSibling;
+            const icon = questionElement.querySelector('span');
+            
+            answerElement.classList.toggle('hidden');
+            if (answerElement.classList.contains('hidden')) {
+                icon.textContent = '+';
+            } else {
+                icon.textContent = '–';
+            }
+        }
+
+        // Initial setup on page load
+        window.onload = function() {
+            addEventListeners();
+            // Attach listener for course calculation when input changes initially
+            document.querySelectorAll('.assignment-input, .tee-input').forEach(input => {
+                 const courseId = input.dataset.courseId;
+                 calculateCourseTotal(courseId);
+             });
+        };
+
+    </script>
+</body>
+</html>
